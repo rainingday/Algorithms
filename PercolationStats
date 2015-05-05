@@ -1,0 +1,73 @@
+public class PercolationStats {
+    private double[] openSiteArray;
+    
+    public PercolationStats(int N, int T) {     // perform T independent experiments on an N-by-N grid
+        if (N <= 0 || T <= 0) {
+            throw new java.lang.IllegalArgumentException("Not a valid N or T");
+        }
+        openSiteArray = new double[T];
+        int k = 0;
+        while(k < T) {
+            Percolation test = new Percolation(N);
+            int count = 0;
+            while (!test.percolates()) {
+                int i = StdRandom.uniform(N) + 1;
+                int j = StdRandom.uniform(N) + 1;
+                if (test.isOpen(i, j)) {
+                    continue;
+                } else {
+                    test.open(i, j);
+                    count++;
+                }
+            }
+            openSiteArray[k] = (double) count/N/N;
+            //StdOut.println(count); StdOut.println(openSiteArray[k]);
+            k++;
+        }
+    }
+    
+    public double mean() {                      // sample mean of percolation threshold
+        if (openSiteArray.length != 0) {
+            double mean = StdStats.mean(openSiteArray);
+            return mean;
+        } else {
+            return 0;
+        }
+    }
+    
+    public double stddev() {                    // sample standard deviation of percolation threshold
+        if (openSiteArray.length != 0) {
+            double std = StdStats.stddev(openSiteArray);
+            return std;
+        } else {
+            return 0;
+        }
+    }
+    
+    public double confidenceLo() {              // low  endpoint of 95% confidence interval
+        if (openSiteArray.length != 0) {
+            return this.mean() - 1.96 * this.stddev()/Math.sqrt(openSiteArray.length);
+        } else {
+            return 0;
+        }
+    }
+    
+    public double confidenceHi() {              // high endpoint of 95% confidence interval
+        if (openSiteArray.length != 0) {
+            return this.mean() + 1.96 * this.stddev()/Math.sqrt(openSiteArray.length);
+        } else {
+            return 0;
+        }
+    }
+    
+    public static void main(String[] args) {    // test client (described below)
+        int N = Integer.parseInt(args[0]);
+        int T = Integer.parseInt(args[1]);
+
+        PercolationStats percolation = new PercolationStats(N, T);
+        
+        StdOut.println("mean                    = " + percolation.mean());
+        StdOut.println("stddev                  = " + percolation.stddev());
+        StdOut.println("95% confidence interval = " + percolation.confidenceLo() + ", " + percolation.confidenceHi());
+    }
+}
