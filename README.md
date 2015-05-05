@@ -1,2 +1,2 @@
 # Algorithms
-Assignment notes for Coursera Algorithm I
+Assignments for Coursera Algorithm I
